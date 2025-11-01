@@ -13,7 +13,7 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/coins`);
+      const res = await axios.get("https://vr-automation-assignment.onrender.com/api/coins");
       setCoins(res.data);
       setFilteredCoins(res.data);
       setLoading(false);

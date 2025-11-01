@@ -2,18 +2,44 @@ import axios from "axios";
 import HistoryData from "../models/historyDataModel.js";
 import CurrentData from "../models/currentDataModel.js";
 
+// export const getCoins = async (req, res) => {
+//     try {
+//         const url =
+//             "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1";
+
+//         const response = await axios.get(url);
+//         res.status(200).json(response.data);
+//     } catch (error) {
+//         console.error("Error fetching coins:", error.message);
+//         res.status(500).json({ error: "Failed to fetch coin data" });
+//     }
+// };
+
 export const getCoins = async (req, res) => {
     try {
         const url =
             "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1";
 
-        const response = await axios.get(url);
+        const response = await axios.get(url, {
+            headers: {
+                "User-Agent": "CryptoTracker/1.0 (https://vr-automation-assignment.onrender.com)",
+                "Accept": "application/json",
+            },
+        });
+
         res.status(200).json(response.data);
     } catch (error) {
         console.error("Error fetching coins:", error.message);
+        if (error.response) {
+            console.error("Response data:", error.response.data);
+            console.error("Status code:", error.response.status);
+        } else if (error.request) {
+            console.error("No response received from CoinGecko");
+        }
         res.status(500).json({ error: "Failed to fetch coin data" });
     }
 };
+
 
 export const saveHistory = async (req, res) => {
     try {

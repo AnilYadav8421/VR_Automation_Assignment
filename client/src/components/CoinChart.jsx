@@ -19,7 +19,7 @@ const CoinChart = ({ coinId, onClose }) => {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/history/${coinId}`);
+                const res = await axios.get(`http://localhost:5000/api/history/${coinId}`);
                 const formatted = res.data.map((item) => ({
                     time: new Date(item.timestamp).toLocaleTimeString(),
                     price: item.price,

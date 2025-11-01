@@ -13,7 +13,7 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("https://vr-automation-assignment.onrender.com/api/coins");
+      const res = await axios.get("http://localhost:5000/api/coins");
       setCoins(res.data);
       setFilteredCoins(res.data);
       setLoading(false);

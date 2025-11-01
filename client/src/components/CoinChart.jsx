@@ -19,10 +19,7 @@ const CoinChart = ({ coinId, onClose }) => {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const res = await axios.get(
-                    `https://vr-automation-assignment.onrender.com/api/history/${coinId}`
-                );
-
+                const res = await axios.get(`http://localhost:5000/api/history/${coinId}`);
                 const formatted = res.data.map((item) => ({
                     time: new Date(item.timestamp).toLocaleTimeString(),
                     price: item.price,
@@ -49,7 +46,7 @@ const CoinChart = ({ coinId, onClose }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={onClose}
+                onClick={onClose} 
             >
                 <motion.div
                     className="bg-white rounded-2xl shadow-2xl p-6 max-w-3xl w-full mx-4 relative"
@@ -57,7 +54,7 @@ const CoinChart = ({ coinId, onClose }) => {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
                     transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()} 
                 >
                     {/* Header */}
                     <div className="flex justify-between items-center border-b pb-3 mb-4">

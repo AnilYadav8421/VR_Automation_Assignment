@@ -28,7 +28,7 @@ The backend collects data from the CoinGecko API and stores it in MongoDB automa
 ### 1 Frontend Setup
 
 ```bash
-git clone https://github.com/<your-username>/crypto-tracker-frontend.git
+git clone https://github.com/AnilYadav8421/VR_Automation_Assignment.git
 cd client
 npm install
 npm run dev
@@ -36,7 +36,7 @@ npm run dev
 ```
 ### 2 Backend Setup
 ```bash
-git clone https://github.com/<your-username>/crypto-tracker-backend.git
+git clone https://github.com/AnilYadav8421/VR_Automation_Assignment.git
 cd server
 npm install
 Your backend will be available at

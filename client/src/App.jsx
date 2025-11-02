@@ -13,12 +13,15 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("https://vr-automation-assignment.onrender.com/api/coins");
+      const res = await axios.get(
+        "https://vr-automation-assignment.onrender.com/api/coins"
+      );
       setCoins(res.data);
       setFilteredCoins(res.data);
-      setLoading(false);
     } catch (err) {
       console.error("Error fetching data:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,18 +34,21 @@ function App() {
   useEffect(() => {
     const result = coins.filter(
       (coin) =>
-        coin.name.toLowerCase().includes(search.toLowerCase()) ||
-        coin.symbol.toLowerCase().includes(search.toLowerCase())
+        coin.name?.toLowerCase().includes(search.toLowerCase()) ||
+        coin.symbol?.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredCoins(result);
   }, [search, coins]);
 
   const handleSort = (type) => {
     let sorted = [...filteredCoins];
-    if (type === "price") sorted.sort((a, b) => b.current_price - a.current_price);
-    if (type === "marketcap") sorted.sort((a, b) => b.market_cap - a.market_cap);
+    if (type === "price") sorted.sort((a, b) => (b.current_price || 0) - (a.current_price || 0));
+    if (type === "marketcap") sorted.sort((a, b) => (b.market_cap || 0) - (a.market_cap || 0));
     if (type === "change")
-      sorted.sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
+      sorted.sort(
+        (a, b) =>
+          (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0)
+      );
     setFilteredCoins(sorted);
     setSortBy(type);
   };
@@ -50,7 +56,9 @@ function App() {
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen bg-gradient-to-b from-indigo-50 to-white">
-        <p className="text-2xl font-semibold text-indigo-600 animate-pulse">Loading Data...</p>
+        <p className="text-2xl font-semibold text-indigo-600 animate-pulse">
+          Loading Data...
+        </p>
       </div>
     );
 
@@ -60,10 +68,13 @@ function App() {
         <h1 className="text-4xl font-extrabold tracking-tight text-indigo-600 drop-shadow-sm">
           Top Cryptocurrencies
         </h1>
-        <p className="text-gray-500 mt-2 text-sm">Auto-refreshes every 30 minutes</p>
+        <p className="text-gray-500 mt-2 text-sm">
+          Auto-refreshes every 30 minutes
+        </p>
       </header>
 
       <main className="max-w-6xl mx-auto p-6">
+        {/* Search & Sort */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
           <input
             type="text"
@@ -82,8 +93,8 @@ function App() {
                 key={key}
                 onClick={() => handleSort(key)}
                 className={`px-4 py-2 rounded-xl font-medium border transition-all duration-200 ${sortBy === key
-                  ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
-                  : "bg-white hover:bg-indigo-50 border-gray-300 text-gray-700"
+                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
+                    : "bg-white hover:bg-indigo-50 border-gray-300 text-gray-700"
                   }`}
               >
                 Sort by {label}
@@ -92,6 +103,7 @@ function App() {
           </div>
         </div>
 
+        {/* Table */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -115,24 +127,35 @@ function App() {
                 <motion.tr
                   key={coin.id}
                   whileHover={{ scale: 1.01 }}
-                  className="cursor-pointer border-b"
+                  className="cursor-pointer border-b hover:bg-indigo-50/40 transition"
                   onClick={() => setSelectedCoin(coin.id)}
                 >
-                  <td className="p-4 font-semibold text-gray-600">{index + 1}</td>
+                  <td className="p-4 font-semibold text-gray-600">
+                    {index + 1}
+                  </td>
                   <td className="p-4 font-medium text-gray-900">{coin.name}</td>
                   <td className="p-4 uppercase text-gray-500">{coin.symbol}</td>
-                  <td className="p-4 font-semibold">${coin.current_price.toLocaleString()}</td>
-                  <td className="p-4">${coin.market_cap.toLocaleString()}</td>
+                  <td className="p-4 font-semibold">
+                    ${coin.current_price?.toLocaleString() || "N/A"}
+                  </td>
+                  <td className="p-4">
+                    ${coin.market_cap?.toLocaleString() || "N/A"}
+                  </td>
                   <td
-                    className={`p-4 font-semibold ${coin.price_change_percentage_24h >= 0
-                      ? "text-green-600"
-                      : "text-red-500"
+                    className={`p-4 font-semibold ${(coin.price_change_percentage_24h || 0) >= 0
+                        ? "text-green-600"
+                        : "text-red-500"
                       }`}
                   >
-                    {coin.price_change_percentage_24h.toFixed(2)}%
+                    {coin.price_change_percentage_24h
+                      ? coin.price_change_percentage_24h.toFixed(2)
+                      : "0.00"}
+                    %
                   </td>
                   <td className="p-4 text-gray-500 text-sm">
-                    {new Date(coin.last_updated).toLocaleString()}
+                    {coin.last_updated
+                      ? new Date(coin.last_updated).toLocaleString()
+                      : "N/A"}
                   </td>
                 </motion.tr>
               ))}
@@ -146,7 +169,7 @@ function App() {
       </main>
 
       <footer className="text-center py-6 text-gray-500 text-sm">
-        Built by Anil Y. for VR Automation.
+        Built by <span className="font-semibold">Anil Y.</span> for VR Automation 🚀
       </footer>
     </div>
   );

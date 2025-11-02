@@ -11,7 +11,6 @@ function App() {
   const [sortBy, setSortBy] = useState("");
   const [selectedCoin, setSelectedCoin] = useState(null);
 
-  // ✅ Fetch coins from your Render backend
   const fetchData = async () => {
     try {
       const res = await axios.get("https://vr-automation-assignment.onrender.com/api/coins");
@@ -25,11 +24,10 @@ function App() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 30 * 60 * 1000); // every 30 min
+    const interval = setInterval(fetchData, 30 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ Search filter
   useEffect(() => {
     const result = coins.filter(
       (coin) =>
@@ -39,7 +37,6 @@ function App() {
     setFilteredCoins(result);
   }, [search, coins]);
 
-  // ✅ Sorting
   const handleSort = (type) => {
     let sorted = [...filteredCoins];
     if (type === "price") sorted.sort((a, b) => b.price - a.price);
@@ -49,7 +46,6 @@ function App() {
     setSortBy(type);
   };
 
-  // ✅ Loading screen
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen bg-gradient-to-b from-indigo-50 to-white">
@@ -57,7 +53,6 @@ function App() {
       </div>
     );
 
-  // ✅ UI layout
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 text-gray-800">
       <header className="py-8 text-center shadow-sm bg-white/70 backdrop-blur">
@@ -68,7 +63,6 @@ function App() {
       </header>
 
       <main className="max-w-6xl mx-auto p-6">
-        {/* Search + Sort Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
           <input
             type="text"
@@ -87,8 +81,8 @@ function App() {
                 key={key}
                 onClick={() => handleSort(key)}
                 className={`px-4 py-2 rounded-xl font-medium border transition-all duration-200 ${sortBy === key
-                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
-                    : "bg-white hover:bg-indigo-50 border-gray-300 text-gray-700"
+                  ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
+                  : "bg-white hover:bg-indigo-50 border-gray-300 text-gray-700"
                   }`}
               >
                 Sort by {label}
@@ -97,7 +91,6 @@ function App() {
           </div>
         </div>
 
-        {/* Coins Table */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -149,7 +142,6 @@ function App() {
           </table>
         </motion.div>
 
-        {/* Chart Modal */}
         {selectedCoin && (
           <CoinChart coinId={selectedCoin} onClose={() => setSelectedCoin(null)} />
         )}

@@ -8,7 +8,6 @@ import coinRoutes from "./routes/coinRoutes.js";
 import historyRoutes from "./routes/historyRoutes.js";
 import CurrentData from "./models/currentDataModel.js";
 import HistoryData from "./models/historyDataModel.js";
-import cors from "cors";
 
 dotenv.config();
 connectDB();

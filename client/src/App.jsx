@@ -11,70 +11,64 @@ function App() {
   const [sortBy, setSortBy] = useState("");
   const [selectedCoin, setSelectedCoin] = useState(null);
 
+  // ✅ Fetch coins from your Render backend
   const fetchData = async () => {
     try {
-      const res = await axios.get(
-        "https://vr-automation-assignment.onrender.com/api/coins"
-      );
+      const res = await axios.get("https://vr-automation-assignment.onrender.com/api/coins");
       setCoins(res.data);
       setFilteredCoins(res.data);
+      setLoading(false);
     } catch (err) {
       console.error("Error fetching data:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 30 * 60 * 1000);
+    const interval = setInterval(fetchData, 30 * 60 * 1000); // every 30 min
     return () => clearInterval(interval);
   }, []);
 
+  // ✅ Search filter
   useEffect(() => {
     const result = coins.filter(
       (coin) =>
-        coin.name?.toLowerCase().includes(search.toLowerCase()) ||
-        coin.symbol?.toLowerCase().includes(search.toLowerCase())
+        coin.name.toLowerCase().includes(search.toLowerCase()) ||
+        coin.symbol.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredCoins(result);
   }, [search, coins]);
 
+  // ✅ Sorting
   const handleSort = (type) => {
     let sorted = [...filteredCoins];
-    if (type === "price") sorted.sort((a, b) => (b.current_price || 0) - (a.current_price || 0));
-    if (type === "marketcap") sorted.sort((a, b) => (b.market_cap || 0) - (a.market_cap || 0));
-    if (type === "change")
-      sorted.sort(
-        (a, b) =>
-          (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0)
-      );
+    if (type === "price") sorted.sort((a, b) => b.price - a.price);
+    if (type === "marketcap") sorted.sort((a, b) => b.marketCap - a.marketCap);
+    if (type === "change") sorted.sort((a, b) => b.change24h - a.change24h);
     setFilteredCoins(sorted);
     setSortBy(type);
   };
 
+  // ✅ Loading screen
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen bg-gradient-to-b from-indigo-50 to-white">
-        <p className="text-2xl font-semibold text-indigo-600 animate-pulse">
-          Loading Data...
-        </p>
+        <p className="text-2xl font-semibold text-indigo-600 animate-pulse">Loading Data...</p>
       </div>
     );
 
+  // ✅ UI layout
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 text-gray-800">
       <header className="py-8 text-center shadow-sm bg-white/70 backdrop-blur">
         <h1 className="text-4xl font-extrabold tracking-tight text-indigo-600 drop-shadow-sm">
           Top Cryptocurrencies
         </h1>
-        <p className="text-gray-500 mt-2 text-sm">
-          Auto-refreshes every 30 minutes
-        </p>
+        <p className="text-gray-500 mt-2 text-sm">Auto-refreshes every 30 minutes</p>
       </header>
 
       <main className="max-w-6xl mx-auto p-6">
-        {/* Search & Sort */}
+        {/* Search + Sort Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
           <input
             type="text"
@@ -103,7 +97,7 @@ function App() {
           </div>
         </div>
 
-        {/* Table */}
+        {/* Coins Table */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -125,37 +119,29 @@ function App() {
             <tbody>
               {filteredCoins.map((coin, index) => (
                 <motion.tr
-                  key={coin.id}
+                  key={coin._id}
                   whileHover={{ scale: 1.01 }}
-                  className="cursor-pointer border-b hover:bg-indigo-50/40 transition"
-                  onClick={() => setSelectedCoin(coin.id)}
+                  className="cursor-pointer border-b"
+                  onClick={() => setSelectedCoin(coin.coinId)}
                 >
-                  <td className="p-4 font-semibold text-gray-600">
-                    {index + 1}
-                  </td>
+                  <td className="p-4 font-semibold text-gray-600">{index + 1}</td>
                   <td className="p-4 font-medium text-gray-900">{coin.name}</td>
                   <td className="p-4 uppercase text-gray-500">{coin.symbol}</td>
+
                   <td className="p-4 font-semibold">
-                    ${coin.current_price?.toLocaleString() || "N/A"}
+                    ${coin.price ? coin.price.toLocaleString() : "N/A"}
                   </td>
                   <td className="p-4">
-                    ${coin.market_cap?.toLocaleString() || "N/A"}
+                    ${coin.marketCap ? coin.marketCap.toLocaleString() : "N/A"}
                   </td>
                   <td
-                    className={`p-4 font-semibold ${(coin.price_change_percentage_24h || 0) >= 0
-                        ? "text-green-600"
-                        : "text-red-500"
+                    className={`p-4 font-semibold ${coin.change24h >= 0 ? "text-green-600" : "text-red-500"
                       }`}
                   >
-                    {coin.price_change_percentage_24h
-                      ? coin.price_change_percentage_24h.toFixed(2)
-                      : "0.00"}
-                    %
+                    {coin.change24h ? coin.change24h.toFixed(2) : 0.0}%
                   </td>
                   <td className="p-4 text-gray-500 text-sm">
-                    {coin.last_updated
-                      ? new Date(coin.last_updated).toLocaleString()
-                      : "N/A"}
+                    {coin.timestamp ? new Date(coin.timestamp).toLocaleString() : "N/A"}
                   </td>
                 </motion.tr>
               ))}
@@ -163,13 +149,14 @@ function App() {
           </table>
         </motion.div>
 
+        {/* Chart Modal */}
         {selectedCoin && (
           <CoinChart coinId={selectedCoin} onClose={() => setSelectedCoin(null)} />
         )}
       </main>
 
       <footer className="text-center py-6 text-gray-500 text-sm">
-        Built by <span className="font-semibold">Anil Y.</span> for VR Automation 🚀
+        Built by Anil Y. for VR Automation.
       </footer>
     </div>
   );

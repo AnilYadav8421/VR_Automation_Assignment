@@ -14,15 +14,6 @@ import CurrentData from "../models/currentDataModel.js";
 //         res.status(500).json({ error: "Failed to fetch coin data" });
 //     }
 // };
-
-import axios from "axios";
-import HistoryData from "../models/historyDataModel.js";
-import CurrentData from "../models/currentDataModel.js";
-
-import axios from "axios";
-import HistoryData from "../models/historyDataModel.js";
-import CurrentData from "../models/currentDataModel.js";
-
 // ✅ Fetch coins — use DB cache instead of CoinGecko
 export const getCoins = async (req, res) => {
     try {

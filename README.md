@@ -83,15 +83,6 @@ This ensures your app always displays the latest prices even if the CoinGecko AP
 -MongoDB stores both live and historical data
 
 ```
- ### Screenshots
-
-App dashboard view
-![App Screenshot](assets/screenshot.png)
-
-MongoDB data collections
-
-Render cron logs
-
  Author
 
 Anil Yadav

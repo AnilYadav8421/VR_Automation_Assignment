@@ -15,30 +15,40 @@ import CurrentData from "../models/currentDataModel.js";
 //     }
 // };
 
+import axios from "axios";
+import HistoryData from "../models/historyDataModel.js";
+import CurrentData from "../models/currentDataModel.js";
+
 export const getCoins = async (req, res) => {
     try {
+        // Try reading from DB first
+        const cachedData = await CurrentData.find({});
+        if (cachedData.length > 0) {
+            return res.status(200).json(cachedData);
+        }
+
+        // Fallback: fetch from API only if DB empty
         const url =
             "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1";
 
         const response = await axios.get(url, {
             headers: {
-                "User-Agent": "CryptoTracker/1.0 (https://vr-automation-assignment.onrender.com)",
+                "User-Agent": "CryptoTracker/1.0",
                 "Accept": "application/json",
             },
         });
 
+        // Save to DB for next time
+        await CurrentData.deleteMany({});
+        await CurrentData.insertMany(response.data);
+
         res.status(200).json(response.data);
     } catch (error) {
         console.error("Error fetching coins:", error.message);
-        if (error.response) {
-            console.error("Response data:", error.response.data);
-            console.error("Status code:", error.response.status);
-        } else if (error.request) {
-            console.error("No response received from CoinGecko");
-        }
         res.status(500).json({ error: "Failed to fetch coin data" });
     }
 };
+
 
 
 export const saveHistory = async (req, res) => {

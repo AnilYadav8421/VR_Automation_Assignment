@@ -86,6 +86,7 @@ This ensures your app always displays the latest prices even if the CoinGecko AP
  ### Screenshots
 
 App dashboard view
+![App Screenshot](assets/screenshot.png)
 
 MongoDB data collections
 

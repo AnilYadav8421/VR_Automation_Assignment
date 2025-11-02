@@ -8,12 +8,22 @@ import coinRoutes from "./routes/coinRoutes.js";
 import historyRoutes from "./routes/historyRoutes.js";
 import CurrentData from "./models/currentDataModel.js";
 import HistoryData from "./models/historyDataModel.js";
+import cors from "cors";
 
 dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // for local dev
+      "https://vr-automation-assignment.vercel.app" // your live frontend URL
+    ],
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use("/api/coins", coinRoutes);
